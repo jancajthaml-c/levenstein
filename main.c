@@ -1,19 +1,18 @@
 #include "levenstein.h"
-#include <stdlib.h>
 
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 
 double diff(double start, double end) {
-  double temp;
   if ((end - start) < 0) {
   	return 1000000000 + end - start;
   } else {
-		return end - start;
+	return end - start;
   }
-  return temp;
+  return 0;
 }
 
 void expectDistance(char* a, char* b, int distance) {
