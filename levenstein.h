@@ -1,1 +1,0 @@
-int levenstein_distance(const char* a, const char* b, int length_a, int length_b);
