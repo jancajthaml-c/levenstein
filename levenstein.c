@@ -1,7 +1,6 @@
 #include "levenstein.h"
 
-
-int levensteinDistance(const char* a, const char* b, int length_a, int length_b) {
+int levenstein_distance(const char* a, const char* b, int length_a, int length_b) {
   if (!length_a) {
     return length_b;
   }
@@ -14,13 +13,10 @@ int levensteinDistance(const char* a, const char* b, int length_a, int length_b)
 
   int prev;
   int tmp;
-
   int i1 = 0;
   int i2 = 0;
   int i3 = 0;
-
   int l1 = length_b + 1;
-
   int f[l1];
 
 s1:

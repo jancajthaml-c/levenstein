@@ -1,4 +1,5 @@
 #include "levenstein.h"
+#include <stdlib.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -15,99 +16,53 @@ double diff(double start, double end) {
   return temp;
 }
 
-int _levensteinDistance(char* a, char* b) {
-	return levensteinDistance(a, b, strlen(a), strlen(b));
+void expectDistance(char* a, char* b, int distance) {
+	int d = levenstein_distance(a, b, strlen(a), strlen(b));
+
+	if (d != distance) {
+		printf("`%s` and `%s` expected distance %d but got %d instead\n\n", a, b, distance, d);
+		exit(EXIT_FAILURE);
+	}
 }
 
 int main() {
 	printf("\nRunning unit tests\n");
 
-	// expectations
-
 	// matches
-	if (_levensteinDistance("", "") != 0) {
-		return 1;
-	}
-	if (_levensteinDistance("a", "a") != 0) {
-		return 1;
-	}
-	if (_levensteinDistance("abc", "abc") != 0) {
-		return 1;
-	}
+	expectDistance("", "", 0);
+	expectDistance("a", "a", 0);
+	expectDistance("abc", "abc", 0);
 
 	// empty on one side
-	if (_levensteinDistance("a", "") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("", "a") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("abc", "") != 3) {
-		return 1;
-	}
-	if (_levensteinDistance("", "abc") != 3) {
-		return 1;
-	}
+	expectDistance("a", "", 1);
+	expectDistance("", "a", 1);
+	expectDistance("abc", "", 3);
+	expectDistance("", "abc", 3);
 
 	// inserts only
-	if (_levensteinDistance("a", "ab") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("b", "ba") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("ac", "abc") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("abcdefg", "xabxcdxxefxgx") != 6) {
-		return 1;
-	}
+	expectDistance("a", "ab", 1);
+	expectDistance("b", "ba", 1);
+	expectDistance("ac", "abc", 1);
+	expectDistance("abcdefg", "xabxcdxxefxgx", 6);
 
 	// deletes only
-	if (_levensteinDistance("ab", "a") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("ab", "b") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("abc", "ac") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("xabxcdxxefxgx", "abcdefg") != 6) {
-		return 1;
-	}
+	expectDistance("ab", "a", 1);
+	expectDistance("ab", "b", 1);
+	expectDistance("abc", "ac", 1);
+	expectDistance("xabxcdxxefxgx", "abcdefg", 6);
 
 	// swaps only
-	if (_levensteinDistance("a", "b") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("ab", "ac") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("ac", "bc") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("abc", "axc") != 1) {
-		return 1;
-	}
-	if (_levensteinDistance("xabxcdxxefxgx", "1ab2cd34ef5g6") != 6) {
-		return 1;
-	}
+	expectDistance("a", "b", 1);
+	expectDistance("ab", "ac", 1);
+	expectDistance("ac", "bc", 1);
+	expectDistance("abc", "axc", 1);
+	expectDistance("xabxcdxxefxgx", "1ab2cd34ef5g6", 6);
 
 	// combination of insert + delete + swap
-	if (_levensteinDistance("example", "samples") != 3) {
-		return 1;
-	}
-	if (_levensteinDistance("sturgeon", "urgently") != 6) {
-		return 1;
-	}
-	if (_levensteinDistance("levenshtein", "frankenstein") != 6) {
-		return 1;
-	}
-	if (_levensteinDistance("distance", "difference") != 5) {
-		return 1;
-	}
-
+	expectDistance("example", "samples", 3);
+	expectDistance("sturgeon", "urgently", 6);
+	expectDistance("levenshtein", "frankenstein", 6);
+	expectDistance("distance", "difference", 5);
 
 	printf("passed");
 
@@ -124,13 +79,19 @@ int main() {
 	struct timespec t1;
 	struct timespec t2;
 
+	char* string_a = "xabxcdxxefxgx";
+	int len_a = strlen(string_a);
+	char* string_b = "1ab2cd34ef5g6";
+	int len_b = strlen(string_b);
+
 	for (i = 0; i < times; ++i) {
+		// clock cost runtime reference
 		clock_gettime(CLOCK_MONOTONIC_RAW, &t1);
 		clock_gettime(CLOCK_MONOTONIC_RAW, &t2);
 		clock_cost += diff(t1.tv_nsec, t2.tv_nsec);
-
+		// real test
 		clock_gettime(CLOCK_MONOTONIC_RAW, &t1);
-		_levensteinDistance("xabxcdxxefxgx", "1ab2cd34ef5g6");
+		levenstein_distance(string_a, string_b, len_a, len_b);
 		clock_gettime(CLOCK_MONOTONIC_RAW, &t2);
 		total_time += diff(t1.tv_nsec, t2.tv_nsec);
 	}
